@@ -35,6 +35,10 @@ frontend/.vercel/
 # IDE
 .vscode/
 .idea/
+
+# Tooling
+.claude/
+.github/
 *.swp
 *.swo
 *~
