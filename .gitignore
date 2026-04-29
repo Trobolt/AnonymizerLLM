@@ -38,6 +38,7 @@ frontend/.vercel/
 
 # Tooling
 .claude/
+.github/
 *.swp
 *.swo
 *~

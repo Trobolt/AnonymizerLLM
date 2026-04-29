@@ -1,3 +1,0 @@
-[submodule ".github/agents"]
-	path = .github/agents
-	url = https://github.com/Trobolt/agents.git
