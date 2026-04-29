@@ -1,0 +1,66 @@
+# Dependencies
+node_modules/
+.venv/
+backend/.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Build outputs
+dist/
+build/
+*.exe
+*.msi
+*.dmg
+*.AppImage
+*.deb
+
+# Electron
+electron/dist/
+electron-*-unpacked/
+
+# PyInstaller
+backend/build/
+backend/dist/
+
+# Next.js
+frontend/.next/
+frontend/out/
+frontend/.vercel/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+*.tmp
+*.temp
+
+# Lock files
+package-lock.json
+
+# Source maps
+*.map

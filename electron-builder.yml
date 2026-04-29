@@ -1,0 +1,69 @@
+# Electron Builder Configuration for BewerbungsBot
+# This configuration builds the Electron app with bundled frontend and backend
+
+appId: "com.bewerbungsbot.app"
+productName: "BewerbungsBot"
+publish: null
+
+# Files bundled into the Electron app (accessible via __dirname / app.getAppPath())
+files:
+  - "electron/dist/**/*"
+  - "package.json"
+
+# Extra files copied into app/resources/ (accessible via process.resourcesPath)
+extraResources:
+  - from: "frontend/out"
+    to: "frontend/out"
+  - from: "backend/dist/app.exe"
+    to: "backend/app.exe"
+
+# Directories
+directories:
+  buildResources: "resources"
+  output: "dist"
+
+# Windows-specific configuration
+win:
+  target:
+    - "nsis"
+    - "portable"
+  certificateFile: null
+  certificatePassword: null
+  signingHashAlgorithms:
+    - "sha256"
+
+# NSIS installer configuration
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: "BewerbungsBot"
+
+# DMG configuration for macOS (optional)
+dmg:
+  contents:
+    - x: 130
+      y: 220
+      type: "file"
+    - x: 410
+      y: 220
+      type: "link"
+      path: "/Applications"
+
+# macOS-specific configuration (optional)
+mac:
+  target:
+    - "dmg"
+    - "zip"
+  category: "public.app-category.productivity"
+
+# Linux-specific configuration (optional)
+linux:
+  target:
+    - "AppImage"
+    - "deb"
+  category: "Utility"
+
+# Artifact name format
+artifactName: "${productName}-${version}-${arch}.${ext}"

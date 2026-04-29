@@ -1,0 +1,18 @@
+{
+  "name": "bewerbungsbot",
+  "version": "1.0.0",
+  "description": "Application with React frontend and Python FastAPI backend",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && powershell -Command \"$env:PYTHONPATH='%cd%'; & '.venv\\Scripts\\uvicorn.exe' main:app --port 8000\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "start": "cd frontend && npm run start"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.5.0",
+    "concurrently": "^8.2.2",
+    "postcss": "^8.5.10",
+    "tailwindcss": "^4.2.2"
+  }
+}
