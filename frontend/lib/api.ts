@@ -1,11 +1,11 @@
-import { getApiClient } from './api/factory';
+import { getApiClient } from "./api/factory";
 
 export interface ChatIdsResponse {
   chat_ids: number[];
 }
 
 export interface ChatMessage {
-  role: 'user' | 'model';
+  role: "user" | "model";
   content: string;
 }
 
@@ -23,7 +23,7 @@ export interface ChatMessagesResponse {
 export async function fetchChatList(): Promise<ChatIdsResponse> {
   try {
     const apiClient = getApiClient();
-    const data = await apiClient.get<ChatIdsResponse>('/api/chats/list');
+    const data = await apiClient.get<ChatIdsResponse>("/api/chats/list");
     return data;
   } catch (error) {
     console.error("Error fetching chat list from backend:", error);
@@ -37,10 +37,14 @@ export async function fetchChatList(): Promise<ChatIdsResponse> {
  * @returns Promise with the chat messages
  * @throws Error if the request fails
  */
-export async function fetchChatMessages(chatId: number): Promise<ChatMessagesResponse> {
+export async function fetchChatMessages(
+  chatId: number
+): Promise<ChatMessagesResponse> {
   try {
     const apiClient = getApiClient();
-    const data = await apiClient.get<ChatMessagesResponse>(`/api/chats/${chatId}/messages`);
+    const data = await apiClient.get<ChatMessagesResponse>(
+      `/api/chats/${chatId}/messages`
+    );
     return data;
   } catch (error) {
     console.error(`Error fetching messages for chat ${chatId}:`, error);
@@ -56,24 +60,30 @@ export async function fetchChatMessages(chatId: number): Promise<ChatMessagesRes
  * @returns A ReadableStreamDefaultReader for reading tokens
  * @throws Error if the request fails
  */
-export async function streamChatMessage(chatId: number, message: string): Promise<ReadableStreamDefaultReader<Uint8Array>> {
+export async function streamChatMessage(
+  chatId: number,
+  message: string
+): Promise<ReadableStreamDefaultReader<Uint8Array>> {
   try {
     const apiClient = getApiClient();
     // Use fetch directly for streaming support
-    const response = await fetch(`http://localhost:8000/api/chats/${chatId}/message`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ message }),
-    });
+    const response = await fetch(
+      `http://localhost:8000/api/chats/${chatId}/message`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message }),
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     if (!response.body) {
-      throw new Error('No response body');
+      throw new Error("No response body");
     }
 
     return response.body.getReader();
@@ -91,7 +101,7 @@ export async function streamChatMessage(chatId: number, message: string): Promis
 export async function addChat(): Promise<{ chat_id: number }> {
   try {
     const apiClient = getApiClient();
-    const data = await apiClient.post<{ chat_id: number }>('/api/chats/add');
+    const data = await apiClient.post<{ chat_id: number }>("/api/chats/add");
     return data;
   } catch (error) {
     console.error("Error creating new chat:", error);
@@ -105,10 +115,15 @@ export async function addChat(): Promise<{ chat_id: number }> {
  * @returns Promise with the removal status
  * @throws Error if the request fails
  */
-export async function removeChat(chatId: number): Promise<{ status: string; removed_chat_id: number }> {
+export async function removeChat(
+  chatId: number
+): Promise<{ status: string; removed_chat_id: number }> {
   try {
     const apiClient = getApiClient();
-    const data = await apiClient.post<{ status: string; removed_chat_id: number }>(`/api/chats/${chatId}/remove`);
+    const data = await apiClient.post<{
+      status: string;
+      removed_chat_id: number;
+    }>(`/api/chats/${chatId}/remove`);
     return data;
   } catch (error) {
     console.error(`Error removing chat ${chatId}:`, error);
@@ -122,20 +137,24 @@ export async function removeChat(chatId: number): Promise<{ status: string; remo
  * @param url API endpoint
  * @param data Request body (optional)
  */
-export async function apiRequest<T = any>(method: string, url: string, data?: any): Promise<T> {
+export async function apiRequest<T = any>(
+  method: string,
+  url: string,
+  data?: any
+): Promise<T> {
   try {
     const apiClient = getApiClient();
 
     switch (method.toUpperCase()) {
-      case 'GET':
+      case "GET":
         return await apiClient.get<T>(url);
-      case 'POST':
+      case "POST":
         return await apiClient.post<T>(url, data);
-      case 'PUT':
+      case "PUT":
         return await apiClient.put<T>(url, data);
-      case 'DELETE':
+      case "DELETE":
         return await apiClient.delete<T>(url);
-      case 'PATCH':
+      case "PATCH":
         return await apiClient.patch<T>(url, data);
       default:
         throw new Error(`Unsupported HTTP method: ${method}`);

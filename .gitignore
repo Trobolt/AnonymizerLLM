@@ -33,7 +33,7 @@ frontend/out/
 frontend/.vercel/
 
 # IDE
-.vscode/
+#.vscode/
 .idea/
 
 # Tooling
@@ -68,3 +68,8 @@ package-lock.json
 
 # Source maps
 *.map
+
+
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/

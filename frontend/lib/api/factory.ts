@@ -1,6 +1,6 @@
-import { ApiClient } from './types';
-import { HttpAdapter } from './httpAdapter';
-import { IpcAdapter } from './ipcAdapter';
+import { ApiClient } from "./types";
+import { HttpAdapter } from "./httpAdapter";
+import { IpcAdapter } from "./ipcAdapter";
 
 let apiClientInstance: ApiClient | null = null;
 
@@ -17,20 +17,21 @@ export function getApiClient(): ApiClient {
     return apiClientInstance;
   }
 
-  const apiMode = process.env.NEXT_PUBLIC_API_MODE || 'http';
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+  const apiMode = process.env.NEXT_PUBLIC_API_MODE || "http";
+  const backendUrl =
+    process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
   try {
     // Only use IPC adapter if we're in a browser environment (not during SSR)
-    if (apiMode === 'ipc' && typeof window !== 'undefined') {
-      console.log('Using IPC adapter for API communication');
+    if (apiMode === "ipc" && typeof window !== "undefined") {
+      console.log("Using IPC adapter for API communication");
       apiClientInstance = new IpcAdapter();
     } else {
       console.log(`Using HTTP adapter for API communication (${backendUrl})`);
       apiClientInstance = new HttpAdapter(backendUrl);
     }
   } catch (error) {
-    console.warn('Failed to create IPC adapter, falling back to HTTP:', error);
+    console.warn("Failed to create IPC adapter, falling back to HTTP:", error);
     apiClientInstance = new HttpAdapter(backendUrl);
   }
 
@@ -47,13 +48,13 @@ export function resetApiClient(): void {
 /**
  * Get the current API mode (adapter type)
  */
-export function getApiMode(): 'http' | 'ipc' {
+export function getApiMode(): "http" | "ipc" {
   // Only use IPC adapter if we're in a browser environment (not during SSR)
-  const apiMode = process.env.NEXT_PUBLIC_API_MODE || 'http';
-  if (apiMode === 'ipc' && typeof window !== 'undefined') {
-    return 'ipc';
+  const apiMode = process.env.NEXT_PUBLIC_API_MODE || "http";
+  if (apiMode === "ipc" && typeof window !== "undefined") {
+    return "ipc";
   }
-  return 'http';
+  return "http";
 }
 
 /**

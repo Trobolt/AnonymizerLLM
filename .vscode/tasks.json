@@ -1,0 +1,187 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Dev: Web Servers",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/dev-web.bat",
+      "windows": {
+        "command": "${workspaceFolder}\\scripts\\dev-web.bat"
+      },
+      "linux": {
+        "command": "bash",
+        "args": ["${workspaceFolder}/scripts/dev-web.sh"]
+      },
+      "osx": {
+        "command": "bash",
+        "args": ["${workspaceFolder}/scripts/dev-web.sh"]
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "dev"
+      },
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^(\\[Error\\]|ERROR|error:)(.*)$",
+          "file": 1,
+          "message": 2
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^\\[dev-web\\].*Starting backend.*",
+          "endsPattern": "^\\[FRONTEND\\].*Ready in"
+        }
+      }
+    },
+    {
+      "label": "Dev: Electron (debug)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/dev-electron.bat",
+      "windows": {
+        "command": "${workspaceFolder}\\scripts\\dev-electron.bat"
+      },
+      "linux": {
+        "command": "bash",
+        "args": ["${workspaceFolder}/scripts/dev-electron.sh"]
+      },
+      "osx": {
+        "command": "bash",
+        "args": ["${workspaceFolder}/scripts/dev-electron.sh"]
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "dev"
+      },
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^(\\[Error\\]|ERROR|error:)(.*)$",
+          "file": 1,
+          "message": 2
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*",
+          "endsPattern": "^\\[dev-electron\\] Ended backend + Next.js dev server + Electron (debug)...$"
+        }
+      }
+    },
+    {
+      "label": "Build: Full Executable",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/build-all.bat",
+      "windows": {
+        "command": "${workspaceFolder}\\scripts\\build-all.bat"
+      },
+      "linux": {
+        "command": "bash",
+        "args": ["${workspaceFolder}/scripts/build-all.sh"]
+      },
+      "osx": {
+        "command": "bash",
+        "args": ["${workspaceFolder}/scripts/build-all.sh"]
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Terminate Dev Processes",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Get-Process uvicorn,electron,node -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue; exit 0"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Quality: Ruff Lint (Python)",
+      "type": "shell",
+      "command": "${workspaceFolder}\\backend\\.venv\\Scripts\\ruff.exe check backend/",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Quality: Ruff Format (Python)",
+      "type": "shell",
+      "command": "${workspaceFolder}\\backend\\.venv\\Scripts\\ruff.exe format backend/",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      
+    },
+    {
+      "label": "Quality: Mypy Type Check (Python)",
+      "type": "shell",
+      "command": "${workspaceFolder}\\backend\\.venv\\Scripts\\mypy.exe backend/",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Quality: Prettier Check (Frontend)",
+      "type": "shell",
+      "command": "npx prettier --check .",
+      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Quality: Prettier Format (Frontend)",
+      "type": "shell",
+      "command": "npx prettier --write .",
+      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Quality: Check All",
+      "dependsOn": [
+        "Quality: Ruff Lint (Python)",
+        "Quality: Mypy Type Check (Python)",
+        "Quality: Prettier Check (Frontend)"
+      ],
+      "dependsOrder": "sequence",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "shell: Clean",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/clean.bat",
+      "windows": {
+        "command": "${workspaceFolder}\\scripts\\clean.bat"
+      },
+      "linux": {
+        "command": "bash",
+        "args": ["${workspaceFolder}/scripts/clean.sh"]
+      },
+      "osx": {
+        "command": "bash",
+        "args": ["${workspaceFolder}/scripts/clean.sh"]
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

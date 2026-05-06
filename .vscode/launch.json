@@ -1,0 +1,61 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+
+    {
+      "name": "Web: Dev (HTTP, Firefox)",
+      "type": "firefox",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/frontend",
+      "reAttach": true,
+      "preLaunchTask": "Dev: Web Servers",
+      "postDebugTask": "Terminate Dev Processes"
+    },
+    {
+      "name": "Electron: Dev (debug)",
+      "type": "node",
+      "request": "attach",
+      "port": 5858,
+      "address": "127.0.0.1",
+      "restart": true,
+      "timeout": 60000,
+      "skipFiles": ["<node_internals>/**"],
+      "outFiles": [
+        "${workspaceFolder}/electron/dist/**/*.js"
+      ],
+      "preLaunchTask": "Dev: Electron (debug)",
+      "postDebugTask": "Terminate Dev Processes"
+    },
+    {
+      "name": "Build: Full Executable",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/.vscode/run-script.js",
+      "args": ["${workspaceFolder}/scripts/build-all.bat"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "noDebug": true
+    },
+    {
+      "name": "Quality: Check All",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/.vscode/run-script.js",
+      "args": ["${workspaceFolder}/scripts/check-quality.bat"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "noDebug": true
+    },
+    {
+      "name": "Clean",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/.vscode/run-script.js",
+      "args": ["${workspaceFolder}/scripts/clean.bat"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "noDebug": true
+    }
+  ]
+}

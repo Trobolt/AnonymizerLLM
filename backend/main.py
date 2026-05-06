@@ -1,8 +1,9 @@
+import asyncio
+import json
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-import asyncio
-import json
 
 app = FastAPI(title="BewerbungsBot Backend")
 
@@ -14,12 +15,12 @@ next_chat_id = 10
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",      # Next.js dev server
-        "http://localhost:3001",      # Alternative Next.js port
-        "http://127.0.0.1:3000",      # Localhost IPv4
-        "http://127.0.0.1:3001",      # Localhost IPv4 alternative
-        "http://localhost:8000",      # Allow calls to same backend
-        "http://127.0.0.1:8000",      # Localhost IPv4 backend
+        "http://localhost:3000",  # Next.js dev server
+        "http://localhost:3001",  # Alternative Next.js port
+        "http://127.0.0.1:3000",  # Localhost IPv4
+        "http://127.0.0.1:3001",  # Localhost IPv4 alternative
+        "http://localhost:8000",  # Allow calls to same backend
+        "http://127.0.0.1:8000",  # Localhost IPv4 backend
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -68,9 +69,7 @@ async def get_chat_messages(chat_id: int):
     """
     return {
         "chat_id": chat_id,
-        "messages": [
-            {"role": "model", "content": f"hello world {chat_id}"}
-        ]
+        "messages": [{"role": "model", "content": f"hello world {chat_id}"}],
     }
 
 
@@ -82,26 +81,23 @@ async def send_message(chat_id: int, request_body: dict):
     Streams tokens separated by newlines in JSON format: {"token": "word"}
     """
     user_message = request_body.get("message", "")
-    
+
     async def token_generator():
         # Stream tokens with delay (simulating LLM)
-        response_text = f"Response to '{3*user_message}' in chat {chat_id}"
+        response_text = f"Response to '{3 * user_message}' in chat {chat_id}"
         words = response_text.split()
-        
+
         for i, word in enumerate(words):
             # Add space between words except for the first one
             token = (word + " ") if i < len(words) - 1 else word
-            
+
             # Yield token as JSON
             yield json.dumps({"token": token}) + "\n"
-            
+
             # Simulate token delay (like streaming from LLM)
             await asyncio.sleep(0.05)
-    
-    return StreamingResponse(
-        token_generator(),
-        media_type="application/x-ndjson"
-    )
+
+    return StreamingResponse(token_generator(), media_type="application/x-ndjson")
 
 
 @app.get("/health")
@@ -109,8 +105,11 @@ async def health_check():
     """Health check endpoint for monitoring."""
     return {"status": "ok"}
 
+
 if __name__ == "__main__":
     import os
+
     import uvicorn
+
     port = int(os.environ.get("PORT", "8000"))
     uvicorn.run(app, host="127.0.0.1", port=port)

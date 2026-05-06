@@ -1,30 +1,30 @@
 "use client";
-import { useEffect, useState } from 'react';
-import { getApiMode } from '@/lib/api/factory';
+import { useEffect, useState } from "react";
+import { getApiMode } from "@/lib/api/factory";
 
 interface SettingsProps {
   onClose: () => void;
 }
 
 export default function Settings({ onClose }: SettingsProps) {
-  const [apiMode, setApiMode] = useState<'http' | 'ipc'>('http');
+  const [apiMode, setApiMode] = useState<"http" | "ipc">("http");
 
   useEffect(() => {
     setApiMode(getApiMode());
   }, []);
 
   const getAdapterLabel = () => {
-    if (apiMode === 'ipc') {
-      return 'IPC (Electron)';
+    if (apiMode === "ipc") {
+      return "IPC (Electron)";
     }
-    return 'HTTP (Web)';
+    return "HTTP (Web)";
   };
 
   const getAdapterDescription = () => {
-    if (apiMode === 'ipc') {
-      return 'Communication via Electron IPC (native application)';
+    if (apiMode === "ipc") {
+      return "Communication via Electron IPC (native application)";
     }
-    return 'Communication via HTTP (web/development mode)';
+    return "Communication via HTTP (web/development mode)";
   };
 
   return (
@@ -52,9 +52,7 @@ export default function Settings({ onClose }: SettingsProps) {
               <div className="flex items-center gap-3">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                 <div>
-                  <p className="font-medium text-white">
-                    {getAdapterLabel()}
-                  </p>
+                  <p className="font-medium text-white">{getAdapterLabel()}</p>
                   <p className="text-xs text-gray-400 mt-1">
                     {getAdapterDescription()}
                   </p>
@@ -70,7 +68,10 @@ export default function Settings({ onClose }: SettingsProps) {
             </h3>
             <div className="space-y-2 text-sm text-gray-400">
               <p>
-                <span className="text-gray-500">Umgebung:</span> {process.env.NODE_ENV === 'production' ? 'Produktion' : 'Entwicklung'}
+                <span className="text-gray-500">Umgebung:</span>{" "}
+                {process.env.NODE_ENV === "production"
+                  ? "Produktion"
+                  : "Entwicklung"}
               </p>
               <p>
                 <span className="text-gray-500">Version:</span> 1.0.0

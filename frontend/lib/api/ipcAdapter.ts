@@ -1,4 +1,4 @@
-import { ApiClient, ApiResponse } from './types';
+import { ApiClient, ApiResponse } from "./types";
 
 /**
  * IPC-based API adapter
@@ -12,46 +12,48 @@ export class IpcAdapter implements ApiClient {
     // Access the exposed Electron API from preload script
     this.electronApi = (window as any).electronApi;
     if (!this.electronApi) {
-      throw new Error('Electron API not available. Make sure preload script is loaded.');
+      throw new Error(
+        "Electron API not available. Make sure preload script is loaded."
+      );
     }
   }
 
   async get<T = any>(url: string): Promise<T> {
-    const response = await this.request('GET', url);
+    const response = await this.request("GET", url);
     if (!response.success) {
-      throw new Error(response.error || 'GET request failed');
+      throw new Error(response.error || "GET request failed");
     }
     return response.data as T;
   }
 
   async post<T = any>(url: string, data?: any): Promise<T> {
-    const response = await this.request('POST', url, data);
+    const response = await this.request("POST", url, data);
     if (!response.success) {
-      throw new Error(response.error || 'POST request failed');
+      throw new Error(response.error || "POST request failed");
     }
     return response.data as T;
   }
 
   async put<T = any>(url: string, data?: any): Promise<T> {
-    const response = await this.request('PUT', url, data);
+    const response = await this.request("PUT", url, data);
     if (!response.success) {
-      throw new Error(response.error || 'PUT request failed');
+      throw new Error(response.error || "PUT request failed");
     }
     return response.data as T;
   }
 
   async delete<T = any>(url: string): Promise<T> {
-    const response = await this.request('DELETE', url);
+    const response = await this.request("DELETE", url);
     if (!response.success) {
-      throw new Error(response.error || 'DELETE request failed');
+      throw new Error(response.error || "DELETE request failed");
     }
     return response.data as T;
   }
 
   async patch<T = any>(url: string, data?: any): Promise<T> {
-    const response = await this.request('PATCH', url, data);
+    const response = await this.request("PATCH", url, data);
     if (!response.success) {
-      throw new Error(response.error || 'PATCH request failed');
+      throw new Error(response.error || "PATCH request failed");
     }
     return response.data as T;
   }
@@ -64,28 +66,32 @@ export class IpcAdapter implements ApiClient {
         data[key] = value;
       });
 
-      const response = await this.request('POST', url, data);
+      const response = await this.request("POST", url, data);
       if (!response.success) {
-        throw new Error(response.error || 'File upload failed');
+        throw new Error(response.error || "File upload failed");
       }
       return response.data as T;
     } catch (error) {
-      console.error('File upload error:', error);
+      console.error("File upload error:", error);
       throw error;
     }
   }
 
   getBaseUrl(): string {
-    return 'ipc://backend';
+    return "ipc://backend";
   }
 
   /**
    * Internal method to make IPC requests
    */
-  private async request(method: string, url: string, data?: any): Promise<ApiResponse> {
+  private async request(
+    method: string,
+    url: string,
+    data?: any
+  ): Promise<ApiResponse> {
     try {
       if (!this.electronApi?.apiRequest) {
-        throw new Error('electronApi.apiRequest is not available');
+        throw new Error("electronApi.apiRequest is not available");
       }
 
       const result = await this.electronApi.apiRequest(method, url, data);
@@ -100,7 +106,7 @@ export class IpcAdapter implements ApiClient {
       console.error(`IPC ${method} request error:`, error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
         status: 0,
       };
     }
