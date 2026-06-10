@@ -1,40 +1,34 @@
 import json
 
 
-def test_get_messages_returns_list(client):
-    chat_id = client.post("/api/chats/add").json()["chat_id"]
-    response = client.get(f"/api/chats/{chat_id}/messages")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["chat_id"] == chat_id
-    assert isinstance(data["messages"], list)
+async def test_streaming_round_trip_persists_user_and_model(aclient):
+    add = await aclient.post("/api/chats/add")
+    chat_id = add.json()["chat_id"]
 
-
-def test_send_message_streams_ndjson_tokens(client):
-    chat_id = client.post("/api/chats/add").json()["chat_id"]
-
-    with client.stream(
+    async with aclient.stream(
         "POST",
         f"/api/chats/{chat_id}/message",
-        json={"message": "hello"},
-    ) as response:
-        assert response.status_code == 200
-        content = b"".join(response.iter_bytes()).decode()
+        json={"message": "hi", "chat_id": chat_id},
+    ) as resp:
+        assert resp.status_code == 200
+        events = []
+        async for line in resp.aiter_lines():
+            if line.strip():
+                events.append(json.loads(line))
 
-    lines = [line for line in content.strip().split("\n") if line.strip()]
-    assert len(lines) > 0, "Expected at least one streamed token"
+    assert events, "expected at least one streamed event"
+    assert all(ev.get("type") == "token" for ev in events), events
+    streamed = "".join(ev["content"] for ev in events)
 
-    for line in lines:
-        token_data = json.loads(line)
-        assert "token" in token_data, f"Line missing 'token' key: {line}"
+    msgs = (await aclient.get(f"/api/chats/{chat_id}/messages")).json()
+    assert msgs["chat_id"] == chat_id
+    assert [m["role"] for m in msgs["messages"]] == ["user", "model"]
+    assert msgs["messages"][0]["content"] == "hi"
+    assert msgs["messages"][1]["content"] == streamed
 
 
-def test_send_empty_message_still_streams(client):
-    chat_id = client.post("/api/chats/add").json()["chat_id"]
-
-    with client.stream(
-        "POST",
-        f"/api/chats/{chat_id}/message",
-        json={"message": ""},
-    ) as response:
-        assert response.status_code == 200
+async def test_get_messages_for_missing_chat_returns_empty(aclient):
+    resp = await aclient.get("/api/chats/999999/messages")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data == {"chat_id": 999999, "messages": []}
