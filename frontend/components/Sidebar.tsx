@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 interface SidebarProps {
-  activeChatId: number;
+  activeChatId: number | null;
   onSelectChat: (id: number) => void;
   onAddChat: () => void;
   onDeleteChat: (id: number) => void;

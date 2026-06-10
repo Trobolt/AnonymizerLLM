@@ -54,10 +54,13 @@ export async function fetchChatMessages(
 
 /**
  * Sends a message to a chat and streams the response.
- * Returns a reader that streams tokens as newline-delimited JSON.
+ * The response is newline-delimited JSON; each line is one event:
+ *   {"type": "token", "content": "..."}            — assistant token
+ *   {"type": "error", "stage": "...", "message": "..."}  — stage failure (terminal)
+ * Caller is responsible for parsing lines and dispatching on `type`.
  * @param chatId The ID of the chat
  * @param message The user message
- * @returns A ReadableStreamDefaultReader for reading tokens
+ * @returns A ReadableStreamDefaultReader for reading event lines
  * @throws Error if the request fails
  */
 export async function streamChatMessage(
@@ -74,7 +77,7 @@ export async function streamChatMessage(
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message, chat_id: chatId }),
       }
     );
 

@@ -16,69 +16,72 @@ export type Chat = { id: number; title: string; messages: Message[] };
 
 export default function Home() {
   const [chats, setChats] = useState<Chat[]>([]);
-  const [activeChatId, setActiveChatId] = useState<number>(1);
+  const [activeChatId, setActiveChatId] = useState<number | null>(null);
   const [chatIds, setChatIds] = useState<number[]>([]);
   const [showSettings, setShowSettings] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
 
-  // Fetch chat IDs from backend on component mount
+  // Fetch chat IDs from backend on mount; auto-create one if none exist so
+  // the user always has a chat to talk to the parrot in.
   useEffect(() => {
-    const getChatIds = async () => {
+    const bootstrap = async () => {
       try {
-        const result = await fetchChatList();
-        setChatIds(result.chat_ids);
-        // Set active chat to the first one if available
-        if (result.chat_ids.length > 0 && !activeChatId) {
-          setActiveChatId(result.chat_ids[0]);
+        let ids = (await fetchChatList()).chat_ids;
+        if (ids.length === 0) {
+          await addChat();
+          ids = (await fetchChatList()).chat_ids;
+        }
+        setChatIds(ids);
+        if (ids.length > 0) {
+          setActiveChatId((current) => current ?? ids[0]);
         }
       } catch (error) {
-        console.error("Failed to fetch chat list from backend:", error);
+        console.error("Failed to bootstrap chat list:", error);
         setChatIds([]);
       }
     };
 
-    getChatIds();
+    bootstrap();
   }, []);
 
   // Fetch messages when chat is selected
   useEffect(() => {
+    if (activeChatId == null) return;
+    const chatId = activeChatId;
     const loadChatMessages = async () => {
       setLoadingChat(true);
       try {
-        const response = await fetchChatMessages(activeChatId);
+        const response = await fetchChatMessages(chatId);
 
         // Update or create chat with messages from backend
         setChats((prev) => {
-          const existingChat = prev.find((c) => c.id === activeChatId);
+          const existingChat = prev.find((c) => c.id === chatId);
           if (existingChat) {
             return prev.map((c) =>
-              c.id === activeChatId ? { ...c, messages: response.messages } : c
+              c.id === chatId ? { ...c, messages: response.messages } : c
             );
           } else {
             return [
               ...prev,
               {
-                id: activeChatId,
-                title: `Chat ${activeChatId}`,
+                id: chatId,
+                title: `Chat ${chatId}`,
                 messages: response.messages,
               },
             ];
           }
         });
       } catch (error) {
-        console.error(
-          `Failed to fetch messages for chat ${activeChatId}:`,
-          error
-        );
+        console.error(`Failed to fetch messages for chat ${chatId}:`, error);
         // Create empty chat if fetch fails
         setChats((prev) => {
-          const existingChat = prev.find((c) => c.id === activeChatId);
+          const existingChat = prev.find((c) => c.id === chatId);
           if (!existingChat) {
             return [
               ...prev,
               {
-                id: activeChatId,
-                title: `Chat ${activeChatId}`,
+                id: chatId,
+                title: `Chat ${chatId}`,
                 messages: [],
               },
             ];
@@ -94,13 +97,17 @@ export default function Home() {
   }, [activeChatId]);
 
   // Den aktuell ausgewählten Chat finden
-  const activeChat = chats.find((c) => c.id === activeChatId) || {
-    id: activeChatId,
-    title: `Chat ${activeChatId}`,
-    messages: [],
-  };
+  const activeChat =
+    activeChatId != null
+      ? chats.find((c) => c.id === activeChatId) || {
+          id: activeChatId,
+          title: `Chat ${activeChatId}`,
+          messages: [],
+        }
+      : null;
 
   const updateMessages = (newMessages: Message[]) => {
+    if (activeChatId == null) return;
     setChats((prev) =>
       prev.map((c) =>
         c.id === activeChatId ? { ...c, messages: newMessages } : c
@@ -154,13 +161,17 @@ export default function Home() {
           <div className="flex items-center justify-center h-full text-gray-400">
             Loading chat...
           </div>
-        ) : (
+        ) : activeChat && activeChatId != null ? (
           <ChatInterface
             key={activeChatId}
             messages={activeChat.messages}
             onMessagesUpdate={updateMessages}
             chatId={activeChatId}
           />
+        ) : (
+          <div className="flex items-center justify-center h-full text-gray-400">
+            No chat selected. Create a new chat to get started.
+          </div>
         )}
       </div>
       {showSettings && <Settings onClose={() => setShowSettings(false)} />}

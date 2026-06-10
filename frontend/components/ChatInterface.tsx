@@ -31,52 +31,55 @@ export default function ChatInterface({
     ];
     onMessagesUpdate(messagesWithPending);
 
+    const handleEvent = (line: string): boolean => {
+      // Returns false when the stream should stop (e.g. error event).
+      try {
+        const parsed = JSON.parse(line);
+        if (parsed.type === "token") {
+          currentText += parsed.content || "";
+          const updated = [...messagesWithPending];
+          updated[updated.length - 1].content = currentText;
+          onMessagesUpdate(updated);
+          return true;
+        }
+        if (parsed.type === "error") {
+          const updated = [...messagesWithPending];
+          updated[updated.length - 1].content =
+            `Error in ${parsed.stage}: ${parsed.message}`;
+          onMessagesUpdate(updated);
+          return false;
+        }
+        // Unknown event type — log and continue.
+        console.warn("Unknown stream event:", parsed);
+        return true;
+      } catch (e) {
+        console.error("Failed to parse stream line:", line, e);
+        return true;
+      }
+    };
+
     try {
       const reader = await streamChatMessage(chatId, userText);
       const decoder = new TextDecoder();
       let buffer = "";
+      let keepGoing = true;
 
-      while (true) {
+      while (keepGoing) {
         const { done, value } = await reader.read();
         if (done) break;
 
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split("\n");
 
-        // Process all complete lines
-        for (let i = 0; i < lines.length - 1; i++) {
+        for (let i = 0; i < lines.length - 1 && keepGoing; i++) {
           const line = lines[i].trim();
-          if (line) {
-            try {
-              const parsed = JSON.parse(line);
-              currentText += parsed.token || "";
-
-              // Update message with new token
-              const updated = [...messagesWithPending];
-              updated[updated.length - 1].content = currentText;
-              onMessagesUpdate(updated);
-            } catch (e) {
-              console.error("Failed to parse token:", e);
-            }
-          }
+          if (line) keepGoing = handleEvent(line);
         }
 
-        // Keep incomplete line in buffer
         buffer = lines[lines.length - 1];
       }
 
-      // Process any remaining content in buffer
-      if (buffer.trim()) {
-        try {
-          const parsed = JSON.parse(buffer);
-          currentText += parsed.token || "";
-          const updated = [...messagesWithPending];
-          updated[updated.length - 1].content = currentText;
-          onMessagesUpdate(updated);
-        } catch (e) {
-          console.error("Failed to parse final token:", e);
-        }
-      }
+      if (keepGoing && buffer.trim()) handleEvent(buffer.trim());
     } catch (error) {
       console.error("Error streaming response:", error);
       // Add error message to chat
