@@ -28,3 +28,4 @@ warn_unused_configs = true      # warn if a mypy config section has no effect
 [tool.pytest.ini_options]
 testpaths = ["tests/backend"]   # where pytest looks for test files
 pythonpath = ["."]              # adds repo root to sys.path so `import backend.main` works
+asyncio_mode = "auto"           # treat async def test_* as async tests automatically
