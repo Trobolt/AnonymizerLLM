@@ -333,5 +333,10 @@
         "/c:/Users/wwert/Desktop/BewerbungsBot/backend/.venv/Lib/site-packages/win32ctypes/pywin32/__init__.py",
         "/c:/Users/wwert/Desktop/BewerbungsBot/backend/.venv/Lib/site-packages/win32ctypes/tests/__init__.py",
         "/c:/Users/wwert/Desktop/BewerbungsBot/backend/.venv/Lib/site-packages/yaml/__init__.py"
-    ]
+    ],
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }

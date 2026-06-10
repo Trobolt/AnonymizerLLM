@@ -20,7 +20,7 @@ echo [dev-web] Starting backend + frontend (HTTP mode)...
 call npx --yes concurrently --kill-others-on-fail ^
     --names "BACKEND,FRONTEND" ^
     --prefix-colors "blue,green" ^
-    "cd backend && .venv\Scripts\uvicorn.exe main:app --reload --host 127.0.0.1 --port 8000" ^
-    "cd frontend && node_modules\.bin\next.cmd dev"
+    "backend\.venv\Scripts\python.exe -m uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000" ^
+    "npm --prefix frontend run dev"
 
 endlocal

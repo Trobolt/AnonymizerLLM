@@ -36,8 +36,11 @@ frontend/.vercel/
 #.vscode/
 .idea/
 
+# Claude Code: commit shared config (CLAUDE.md, commands/, skills/, agents/, rules/,
+# settings.json) but keep personal permissions local.
+.claude/settings.local.json
+
 # Tooling
-.claude/
 .github/
 *.swp
 *.swo
@@ -73,3 +76,10 @@ package-lock.json
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
+
+# Database files
+.data/
+
+# Jupyter notebooks (local prototyping)
+notebooks/
+.ipynb_checkpoints/

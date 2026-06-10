@@ -39,12 +39,39 @@ if exist "dist" (
     echo   - Removed root\dist
 )
 
-REM --- Python Bytecode (Recursive) ---
-echo Removing __pycache__...
-for /d /r "backend" %%d in (__pycache__) do (
-    if exist "%%d" rmdir /s /q "%%d"
+REM --- Cache Folders ---
+echo Cleaning Caches...
+if exist ".data" (
+    rmdir /s /q ".data"
+    echo   - Removed data
+)
+if exist ".mypy_cache" (
+    rmdir /s /q ".mypy_cache"
+    echo   - Removed .mypy_cache
+)
+if exist ".ruff_cache" (
+    rmdir /s /q ".ruff_cache"
+    echo   - Removed .ruff_cache
 )
 
-echo.
+if exist ".pytest_cache" (
+    rmdir /s /q ".pytest_cache"
+    echo   - Removed .pytest_cache
+)
+
+
+REM --- Python Bytecode (Recursive) ---
+set "pycache_removed="
+
+for /d /r "backend" %%d in (__pycache__) do (
+    if exist "%%d" (
+        rmdir /s /q "%%d"
+        set "pycache_removed=1"
+    )
+)
+
+if defined pycache_removed (
+    echo   - Removed __pycache__ recursively
+)
 echo [clean] Success! Compiled files removed.
 endlocal

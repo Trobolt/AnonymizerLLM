@@ -18,9 +18,10 @@ export BROWSER=none
 export ELECTRON_ENABLE_LOGGING=1
 export ELECTRON_ENABLE_STACK_DUMPING=1
 
-echo "[dev-electron] Starting Next.js dev server + Electron (debug)..."
+echo "[dev-electron] Starting backend + Next.js dev server + Electron (debug)..."
 npx --yes concurrently --kill-others-on-fail \
-    --names "FRONTEND,ELECTRON" \
-    --prefix-colors "green,magenta" \
+    --names "BACKEND,FRONTEND,ELECTRON" \
+    --prefix-colors "blue,green,magenta" \
+    "backend/.venv/bin/python -m uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000" \
     "npm --prefix frontend run dev" \
     "npx --yes wait-on http://localhost:3000 && npx electron --inspect=5858 ."

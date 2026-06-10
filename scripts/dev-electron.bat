@@ -33,7 +33,7 @@ echo [dev-electron] Starting backend + Next.js dev server + Electron (debug)...
 call npx --yes concurrently --kill-others ^
     --names "BACKEND,FRONTEND,ELECTRON" ^
     --prefix-colors "blue,green,magenta" ^
-    "cd backend && .venv\Scripts\uvicorn.exe main:app --reload --host 127.0.0.1 --port 8000" ^
+    "backend\.venv\Scripts\python.exe -m uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000" ^
     "npm --prefix frontend run dev" ^
     "npx --yes wait-on http://localhost:3000 && npx electron --inspect=5858 ."
 echo [dev-electron] Ended backend + Next.js dev server + Electron (debug)...
